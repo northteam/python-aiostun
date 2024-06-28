@@ -44,11 +44,11 @@ class Message(object):
     def decode_attrs(self, attrs):
         """decode all attributes"""
         for attr in attrs:
-            # decode the value 
+            # decode the value
             if attr["type"] in [ constants.ATTR_XOR_MAPPED_ADDRESS, constants.ATTR_XOR_MAPPED_ADDRESS_OPTIONAL ]:
                 attr_obj = attribute.AttrXorMappedAddr()
                 attr_obj.decode(value=attr["value"], tid=self.transaction_id)
-                
+
             elif attr["type"] in [ constants.ATTR_MAPPED_ADDRESS ]:
                 attr_obj = attribute.AttrMappedAddr()
                 attr_obj.decode(value=attr["value"])
@@ -126,14 +126,14 @@ class Codec:
         self.buf = b""
         self._queue = asyncio.Queue(0)
 
-    def feed_data(self, data):
+    def feed_data(self, data, addr=None):
         """append data to the buffer"""
         self.buf = b''.join([self.buf, data])
 
         resp = self.decode()
         if resp is None: return
 
-        self._queue.put_nowait(resp)
+        self._queue.put_nowait((resp, addr))
 
     def decode(self):
         """decode data from buffer"""
