@@ -68,6 +68,20 @@ class AttributeAddr(Attribute):
         self.params["port"] = port
         self.params["ip"] = ip
 
+    def encode(self):
+        """encode the attribute to bytes"""
+        attr_value = struct.pack("!B", 0x00)
+        for (family, name) in constants.FAMILY_NAMES.items():
+            if self.params["family"] == name:
+                attr_value += struct.pack("!B", family)
+                break
+        attr_value += struct.pack("!H", self.params["port"])
+        if family == constants.FAMILY_IP4:
+            attr_value += ipaddress.IPv4Address(self.params["ip"]).packed
+        elif family == constants.FAMILY_IP6:
+            attr_value += ipaddress.IPv6Address(self.params["ip"]).packed
+        return attr_value
+
 class AttributeStr(Attribute):
     def __init__(self, attr_type, attr_value):
         Attribute.__init__(self, attr_type)
@@ -79,7 +93,7 @@ class AttributeStr(Attribute):
     def encode(self):
         r = self.params["value"]
         return r.encode() if isinstance(r, str) else r
-        
+
 
 class AttrXorMappedAddr(Attribute):
     def __init__(self):
