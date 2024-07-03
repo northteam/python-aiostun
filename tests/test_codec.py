@@ -10,14 +10,14 @@ class TestDecode(unittest.TestCase):
 
         # Message Type = Binding Success Response
         Binding_Req = "0001"
-        # Message Length 
+        # Message Length
         Binding_Req += "0000"
         # Message Transaction Id
         Binding_Req += "8112a4427a54477269564651786d7749"
 
         codec.buf = bytes.fromhex(Binding_Req)
         decoded = codec.decode()
-       
+
         self.assertIsNotNone(decoded)
 
     def test_valid_binding_request(self):
@@ -26,7 +26,7 @@ class TestDecode(unittest.TestCase):
 
         # Message Type = Binding Success Response
         Binding_Req = "0001"
-        # Message Length 
+        # Message Length
         Binding_Req += "0000"
         # Message Cookie
         Binding_Req += "2112a442"
@@ -35,7 +35,7 @@ class TestDecode(unittest.TestCase):
 
         codec.buf = bytes.fromhex(Binding_Req)
         decoded = codec.decode()
-       
+
         self.assertIsNotNone(decoded)
 
     def test_valid_binding_success_response(self):
@@ -44,7 +44,7 @@ class TestDecode(unittest.TestCase):
 
         # Message Type = Binding Success Response
         Binding_Success = "0101"
-        # Message Length 
+        # Message Length
         Binding_Success += "0048"
         # Message Cookie
         Binding_Success += "2112a442"
@@ -63,7 +63,7 @@ class TestDecode(unittest.TestCase):
 
         codec.buf = bytes.fromhex(Binding_Success)
         decoded = codec.decode()
-        
+
         self.assertIsNotNone(decoded)
 
     def test_invalid_binding_request(self):
@@ -72,7 +72,7 @@ class TestDecode(unittest.TestCase):
 
         # Message Type = Binding Success Response
         Binding_Req = "0001"
-        # Message Length 
+        # Message Length
         Binding_Req += "0010"
         # Message Cookie
         Binding_Req += "2112a442"
@@ -81,7 +81,7 @@ class TestDecode(unittest.TestCase):
 
         codec.buf = bytes.fromhex(Binding_Req)
         decoded = codec.decode()
-       
+
         self.assertIsNone(decoded)
 
     def test_invalid_binding_success_response(self):
@@ -90,7 +90,7 @@ class TestDecode(unittest.TestCase):
 
         # Message Type = Binding Success Response
         Binding_Success = "0101"
-        # Message Length 
+        # Message Length
         Binding_Success += "0048"
         # Message Cookie
         Binding_Success += "2112a442"
@@ -109,7 +109,7 @@ class TestDecode(unittest.TestCase):
 
         codec.buf = bytes.fromhex(Binding_Success)
         decoded = codec.decode()
-        
+
         self.assertIsNone(decoded)
 
 
@@ -124,5 +124,21 @@ class TestEncode(unittest.TestCase):
         # decode it
         codec.buf = msg
         decoded = codec.decode()
-       
+
+        self.assertIsNotNone(decoded)
+
+    def test_binding_response(self):
+        codec = aiostun.Codec()
+
+        # encode message
+        mapped_addr_attr = aiostun.attribute.AttrMappedAddr()
+        mapped_addr_attr.params = {"family": aiostun.constants.FAMILY_NAMES[aiostun.constants.FAMILY_IP4], "ip": "86.237.176.174", "port": 35322}
+        attrs = [mapped_addr_attr]
+        resp = aiostun.stun.ClassicMessage(aiostun.constants.CLASS_SUCCESS, aiostun.constants.METHOD_BINDING, attrs)
+        msg = codec.encode(resp)
+
+        # decode it
+        codec.buf = msg
+        decoded = codec.decode()
+
         self.assertIsNotNone(decoded)
